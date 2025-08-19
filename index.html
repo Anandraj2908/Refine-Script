@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refine Script</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0c0a09;
+            color: #f0f0f0;
+            overflow: hidden;
+        }
+        .glass-ui {
+            background: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .liquid-gradient {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(45deg, #8b5cf6, #ec4899);
+            border-radius: 50%;
+            filter: blur(120px);
+            animation: moveGradient 20s infinite alternate;
+            z-index: -1;
+        }
+        .gradient-1 { top: -10%; left: -5%; }
+        .gradient-2 { bottom: -10%; right: -5%; animation-delay: -10s; background: linear-gradient(45deg, #38bdf8, #34d399); }
+        @keyframes moveGradient {
+            from { transform: translate(0, 0) scale(1) rotate(0deg); }
+            to { transform: translate(100px, 50px) scale(1.3) rotate(45deg); }
+        }
+        .btn-primary {
+            background: rgba(139, 92, 246, 0.8);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: rgba(139, 92, 246, 1);
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.6);
+        }
+        .btn-primary:disabled {
+            background: rgba(55, 65, 81, 0.5);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.1);
+            transition: background 0.2s ease;
+        }
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .loader {
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top: 3px solid #a78bfa;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(31, 41, 55, 0.5);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #8b5cf6;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #a78bfa;
+        }
+        
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            background-size: 1em;
+        }
+
+        /* --- UI FIX: Prevent textarea resizing --- */
+        textarea {
+            resize: none;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex items-center justify-center p-4 md:p-8">
+    <div class="liquid-gradient gradient-1"></div>
+    <div class="liquid-gradient gradient-2"></div>
+
+    <!-- UI FIX: Wrapper for main content and footer -->
+    <div class="flex flex-col items-center w-full h-full">
+        <main class="w-full max-w-5xl h-full max-h-[900px] glass-ui rounded-2xl flex flex-col p-4 sm:p-6 md:p-8 relative overflow-y-auto">
+            
+            <header class="flex justify-between items-center border-b border-gray-700 pb-4 mb-4 flex-shrink-0">
+                <div class="flex items-center space-x-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-violet-400"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+                    <h1 class="text-xl sm:text-2xl font-bold">Refine Script</h1>
+                </div>
+                <button id="settingsBtn" class="icon-btn p-2 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l-.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+            </header>
+
+            <div id="inputView" class="flex flex-col flex-grow min-h-0">
+                <div class="flex-grow flex flex-col md:flex-row gap-4 min-h-0">
+                    <textarea id="rawContent" class="w-full md:w-2/3 h-64 md:h-full bg-gray-900/50 border border-gray-700 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="Paste raw script or content here..."></textarea>
+                    <div class="w-full md:w-1/3 flex flex-col gap-4">
+                        <input type="text" id="specialPrompt" class="w-full bg-gray-900/50 border border-gray-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-violet-500" placeholder="Special instructions (optional)">
+                        <div class="bg-gray-900/50 border border-gray-700 rounded-lg p-4 text-sm text-gray-400 flex-grow">
+                            <h3 class="font-semibold text-gray-200 mb-2">Instructions</h3>
+                            <p>1. Paste your content into the main text area.</p>
+                            <p>2. Add any special requests (e.g., "summarize this", "format as a blog post").</p>
+                            <p>3. Choose your AI model in settings.</p>
+                            <p>4. Click "Refine Script" to process.</p>
+                        </div>
+                    </div>
+                </div>
+                <button id="refineBtn" class="btn-primary w-full md:w-1/2 mx-auto mt-6 py-3 rounded-lg font-bold flex items-center justify-center flex-shrink-0">Refine Script</button>
+            </div>
+
+            <div id="resultView" class="hidden flex-col flex-grow min-h-0">
+                <div id="resultText" class="w-full flex-grow min-h-0 bg-gray-900/50 border border-gray-700 rounded-lg p-4 overflow-y-auto"></div>
+                <!-- UI FIX: Increased top margin for more space -->
+                <div class="flex items-center justify-center gap-4 mt-8 flex-shrink-0">
+                    <button id="downloadBtn" class="icon-btn p-3 rounded-full" title="Download .txt file"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+                    <button id="redoBtn" class="icon-btn p-3 rounded-full" title="Start Over"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
+                </div>
+            </div>
+
+            <div id="status" class="h-6 mt-2 text-center text-sm text-gray-400 flex items-center justify-center gap-2 flex-shrink-0"></div>
+        </main>
+        
+        <!-- UI FIX: Moved footer outside of the main scrolling box -->
+        <footer class="text-center text-xs text-gray-500 mt-4 flex-shrink-0">Tools By Nirvan Tech</footer>
+    </div>
+
+
+    <div id="apiKeyModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4">
+        <div class="glass-ui w-full max-w-md p-6 sm:p-8 rounded-2xl overflow-y-auto max-h-[90vh]">
+            <h2 class="text-2xl font-bold mb-4">Settings</h2>
+            <div class="space-y-4">
+                <div>
+                    <label for="modelSelector" class="block text-sm font-medium text-gray-300 mb-1">Select AI Model</label>
+                    <select id="modelSelector" class="w-full bg-gray-900/50 border border-gray-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-violet-500"></select>
+                </div>
+                <div id="apiKeyFields">
+                    <!-- API key fields will be dynamically inserted here -->
+                </div>
+            </div>
+            <button id="saveSettingsBtn" class="btn-primary w-full mt-6 py-3 rounded-lg font-bold">Save Settings</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dom = {
+                modal: document.getElementById('apiKeyModal'),
+                settingsBtn: document.getElementById('settingsBtn'),
+                saveSettingsBtn: document.getElementById('saveSettingsBtn'),
+                modelSelector: document.getElementById('modelSelector'),
+                apiKeyFields: document.getElementById('apiKeyFields'),
+                refineBtn: document.getElementById('refineBtn'),
+                downloadBtn: document.getElementById('downloadBtn'),
+                redoBtn: document.getElementById('redoBtn'),
+                statusDiv: document.getElementById('status'),
+                inputView: document.getElementById('inputView'),
+                resultView: document.getElementById('resultView'),
+                resultText: document.getElementById('resultText'),
+                rawContent: document.getElementById('rawContent'),
+                specialPrompt: document.getElementById('specialPrompt'),
+            };
+
+            const MODELS = {
+                'gemini-2.0-flash': { provider: 'gemini', name: 'Gemini 2.0 Flash' },
+                'gemini-1.5-pro-latest': { provider: 'gemini', name: 'Gemini 1.5 Pro (Latest)' },
+                'gemini-1.5-flash-latest': { provider: 'gemini', name: 'Gemini 1.5 Flash (Latest)' },
+                'gpt-4o': { provider: 'openai', name: 'OpenAI GPT-4o' },
+                'gpt-4-turbo': { provider: 'openai', name: 'OpenAI GPT-4 Turbo' },
+                'claude-3-opus': { provider: 'anthropic', name: 'Claude 3 Opus' },
+                'claude-3-sonnet': { provider: 'anthropic', name: 'Claude 3 Sonnet' },
+                'llama3-70b': { provider: 'groq', name: 'Groq Llama3 70b' },
+                'llama3-8b': { provider: 'groq', name: 'Groq Llama3 8b' },
+            };
+
+            const API_CONFIG = {
+                gemini: {
+                    keyName: 'geminiApiKey',
+                    url: (model) => `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+                    buildPayload: (prompt, key) => ({
+                        url: API_CONFIG.gemini.url(appState.model),
+                        options: {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                        },
+                        keyQuery: `?key=${key}`
+                    }),
+                    parseResponse: (data) => data.candidates?.[0]?.content?.parts?.[0]?.text
+                },
+                openai: {
+                    keyName: 'openaiApiKey',
+                    url: () => 'https://api.openai.com/v1/chat/completions',
+                    buildPayload: (prompt, key) => ({
+                        url: API_CONFIG.openai.url(),
+                        options: {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                            body: JSON.stringify({ model: appState.model, messages: [{ role: 'user', content: prompt }] })
+                        }
+                    }),
+                    parseResponse: (data) => data.choices?.[0]?.message?.content
+                },
+                anthropic: {
+                    keyName: 'anthropicApiKey',
+                    url: () => 'https://api.anthropic.com/v1/messages',
+                    buildPayload: (prompt, key) => ({
+                        url: API_CONFIG.anthropic.url(),
+                        options: {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+                            body: JSON.stringify({ model: appState.model.replace('claude-3-','claude-3-') + '-20240229', max_tokens: 4096, messages: [{ role: 'user', content: prompt }] })
+                        }
+                    }),
+                    parseResponse: (data) => data.content?.[0]?.text
+                },
+                groq: {
+                    keyName: 'groqApiKey',
+                    url: () => 'https://api.groq.com/openai/v1/chat/completions',
+                    buildPayload: (prompt, key) => ({
+                        url: API_CONFIG.groq.url(),
+                        options: {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                            body: JSON.stringify({ model: appState.model.replace('llama3-','llama3-') + '-8192', messages: [{ role: 'user', content: prompt }] })
+                        }
+                    }),
+                    parseResponse: (data) => data.choices?.[0]?.message?.content
+                }
+            };
+
+            let appState = { model: 'gemini-1.5-pro-latest', keys: {} };
+
+            function init() {
+                loadState();
+                populateModelSelector();
+                createApiKeyFields();
+                updateApiKeyVisibility();
+                checkApiKeys();
+
+                dom.settingsBtn.addEventListener('click', () => dom.modal.classList.remove('hidden'));
+                dom.saveSettingsBtn.addEventListener('click', saveState);
+                dom.modelSelector.addEventListener('change', () => {
+                    appState.model = dom.modelSelector.value;
+                    updateApiKeyVisibility();
+                });
+                dom.refineBtn.addEventListener('click', handleRefine);
+                dom.downloadBtn.addEventListener('click', handleDownload);
+                dom.redoBtn.addEventListener('click', showInputView);
+            }
+
+            function loadState() {
+                const savedState = JSON.parse(localStorage.getItem('refineScriptState'));
+                if (savedState) {
+                    appState = { ...appState, ...savedState };
+                }
+            }
+
+            function saveState() {
+                document.querySelectorAll('.apiKeyInput').forEach(input => {
+                    appState.keys[input.id] = input.value.trim();
+                });
+                appState.model = dom.modelSelector.value;
+                localStorage.setItem('refineScriptState', JSON.stringify(appState));
+                dom.modal.classList.add('hidden');
+                setStatus('Settings saved.', 3000);
+            }
+
+            function populateModelSelector() {
+                Object.entries(MODELS).forEach(([id, { name }]) => {
+                    const option = document.createElement('option');
+                    option.value = id;
+                    option.textContent = name;
+                    dom.modelSelector.appendChild(option);
+                });
+                dom.modelSelector.value = appState.model;
+            }
+
+            function createApiKeyFields() {
+                const providers = [...new Set(Object.values(MODELS).map(m => m.provider))];
+                providers.forEach(provider => {
+                    const keyName = API_CONFIG[provider].keyName;
+                    const div = document.createElement('div');
+                    div.id = `${keyName}Field`;
+                    div.innerHTML = `
+                        <label for="${keyName}" class="block text-sm font-medium text-gray-300 mb-1">${provider.charAt(0).toUpperCase() + provider.slice(1)} API Key</label>
+                        <input type="password" id="${keyName}" class="apiKeyInput w-full bg-gray-900/50 border border-gray-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-violet-500">
+                    `;
+                    dom.apiKeyFields.appendChild(div);
+                    const input = document.getElementById(keyName);
+                    if (appState.keys[keyName]) {
+                        input.value = appState.keys[keyName];
+                    }
+                });
+            }
+
+            function updateApiKeyVisibility() {
+                const selectedProvider = MODELS[dom.modelSelector.value].provider;
+                Object.values(API_CONFIG).forEach(({ keyName }) => {
+                    const field = document.getElementById(`${keyName}Field`);
+                    if (field) {
+                        field.style.display = keyName === API_CONFIG[selectedProvider].keyName ? 'block' : 'none';
+                    }
+                });
+            }
+
+            function checkApiKeys() {
+                const currentProvider = MODELS[appState.model].provider;
+                const currentKeyName = API_CONFIG[currentProvider].keyName;
+                if (!appState.keys[currentKeyName]) {
+                    dom.modal.classList.remove('hidden');
+                }
+            }
+            
+            function setStatus(message, timeout = 0) {
+                dom.statusDiv.innerHTML = message;
+                if (timeout > 0) {
+                    setTimeout(() => { if (dom.statusDiv.innerHTML === message) dom.statusDiv.innerHTML = ''; }, timeout);
+                }
+            }
+
+            function showResultView(content) {
+                dom.resultText.innerText = content;
+                dom.inputView.classList.add('hidden');
+                dom.resultView.classList.remove('hidden');
+            }
+
+            function showInputView() {
+                dom.rawContent.value = '';
+                dom.specialPrompt.value = '';
+                dom.resultView.classList.add('hidden');
+                dom.inputView.classList.remove('hidden');
+            }
+
+            async function handleRefine() {
+                const rawHtml = dom.rawContent.value.trim();
+                const customPrompt = dom.specialPrompt.value.trim();
+                const provider = MODELS[appState.model].provider;
+                const keyName = API_CONFIG[provider].keyName;
+                const apiKey = appState.keys[keyName];
+
+                if (!apiKey) {
+                    setStatus(`API Key for ${provider} not set. Please add it in settings.`, 4000);
+                    dom.modal.classList.remove('hidden');
+                    return;
+                }
+                if (!rawHtml) {
+                    setStatus('Please paste content to refine first.', 3000);
+                    return;
+                }
+
+                dom.refineBtn.disabled = true;
+                setStatus('<div class="loader"></div> Processing with AI...');
+
+                const finalPrompt = `You are an expert script processor. Your task is to process the following content. Base instructions: 1. Format the output cleanly and logically. 2. If it looks like a transcript with timestamps, preserve them. 3. If the text is in Hindi, convert it to Hinglish (e.g., 'नमस्ते दोस्तों' becomes 'Namaste dosto'). ${customPrompt ? `User's special instructions (prioritize these): "${customPrompt}"` : ''} Provide ONLY the final, clean, formatted output. Do not add any introductory text or summaries unless asked. Content: \`\`\`${rawHtml}\`\`\``;
+
+                try {
+                    const { url, options, keyQuery } = API_CONFIG[provider].buildPayload(finalPrompt, apiKey);
+                    const finalUrl = url + (keyQuery || '');
+                    
+                    const response = await fetch(finalUrl, options);
+
+                    if (!response.ok) {
+                        const errorBody = await response.json();
+                        const errorMsg = errorBody.error?.message || JSON.stringify(errorBody);
+                        throw new Error(errorMsg);
+                    }
+
+                    const result = await response.json();
+                    const processedText = API_CONFIG[provider].parseResponse(result);
+
+                    if (!processedText) throw new Error('Invalid or empty API response.');
+                    
+                    showResultView(processedText.trim());
+                    setStatus('');
+
+                } catch (error) {
+                    console.error("API Error:", error);
+                    let errorMessage = `API Error: ${error.message}.`;
+                    if (error instanceof TypeError && error.message.toLowerCase().includes('failed to fetch')) {
+                        errorMessage = 'Network Error: Failed to fetch. Check your internet connection and any browser security extensions (like ad-blockers).';
+                    }
+                    setStatus(errorMessage, 8000);
+                } finally {
+                    dom.refineBtn.disabled = false;
+                }
+            }
+
+            function handleDownload() {
+                const content = dom.resultText.innerText;
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'refined_script.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                setStatus('File downloaded.', 3000);
+            }
+            
+            init();
+        });
+    </script>
+</body>
+</html>
